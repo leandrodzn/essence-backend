@@ -1,0 +1,201 @@
+{
+  "paths": {
+    "/events": {
+      "post": {
+        "summary": "Create a new event",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Data of the event to create",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the event"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the event"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Event created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": { "$ref": "#/definitions/Event" }
+              }
+            }
+          },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      },
+      "get": {
+        "summary": "Get all events",
+        "responses": {
+          "200": {
+            "description": "List of events retrieved successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/Event" }
+                }
+              }
+            }
+          },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      }
+    },
+    "/events/{id}": {
+      "get": {
+        "summary": "Get an event by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the event",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event found successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": { "$ref": "#/definitions/Event" }
+              }
+            }
+          },
+          "404": { "$ref": "#/responses/NotFound" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      },
+      "put": {
+        "summary": "Update an event by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the event",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated data of the event",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "New name of the event"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "New description of the event"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": { "$ref": "#/definitions/Event" }
+              }
+            }
+          },
+          "404": { "$ref": "#/responses/NotFound" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      },
+      "delete": {
+        "summary": "Delete an event by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the event",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event deleted successfully",
+            "schema": {
+              "type": "object",
+              "properties": { "status": { "type": "string", "example": "OK" } }
+            }
+          },
+          "404": { "$ref": "#/responses/NotFound" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Event": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "description": "ID of the event" },
+        "name": { "type": "string", "description": "Name of the event" },
+        "description": {
+          "type": "string",
+          "description": "Description of the event"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp of when the event was created"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of when the event was last updated"
+        }
+      }
+    }
+  },
+  "responses": {
+    "Error": {
+      "description": "Generic error",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "Error" },
+          "message": { "type": "string", "example": "Specific error message" }
+        }
+      }
+    },
+    "NotFound": {
+      "description": "Resource not found",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "Not Found" },
+          "message": { "type": "string", "example": "EventNotFound" }
+        }
+      }
+    }
+  }
+}

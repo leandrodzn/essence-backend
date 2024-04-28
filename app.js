@@ -8,7 +8,7 @@ const JsonError = require("./src/utils/json-error");
 const CustomError = require("./src/utils/custom-error");
 require("./src/config/env");
 
-const models = require("./models");
+const models = require("./src/models");
 const app = express();
 
 // Middleware for logging HTTP requests in development environment
@@ -49,8 +49,8 @@ app.use(JsonError);
 // Make CustomError globally accessible
 global.CustomError = CustomError;
 
-// // Load API routes and pass the express app instance
-// require("./src/api")(app);
+// Load API routes and pass the express app instance
+require("./src/api")(app);
 
 // Middleware for handling 404 errors
 app.use(function (req, res, next) {
