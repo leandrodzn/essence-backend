@@ -8,7 +8,7 @@ const JsonError = require("./src/utils/json-error");
 const CustomError = require("./src/utils/custom-error");
 require("./src/config/env");
 
-// const models = require("./src/models");
+const models = require("./models");
 const app = express();
 
 // Middleware for logging HTTP requests in development environment
