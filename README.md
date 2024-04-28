@@ -18,7 +18,7 @@
 
 ## Description :page_facing_up:
 
-Backend development for Social Service Project 'In Xook'
+Backend development for Project System 'Essence Creatives'
 
 <br>
 
