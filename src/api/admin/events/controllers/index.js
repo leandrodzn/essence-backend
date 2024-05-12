@@ -1,8 +1,8 @@
-const { Event } = require("../../../models");
+const { Event } = require("../../../../models");
 const { validatorCreateEvent } = require("../validators");
-const { validatorId } = require("../../../utils/validators");
-const constants = require("../../../utils/constants");
-const Database = require("../../../config/database");
+const { validatorId } = require("../../../../utils/validators");
+const constants = require("../../../../utils/constants");
+const Database = require("../../../../config/database");
 
 /**
  * @param {Request} req

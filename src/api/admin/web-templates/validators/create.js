@@ -1,9 +1,9 @@
 "use strict";
 
 const { check, checkSchema, validationResult } = require("express-validator");
-const constants = require("../../../utils/constants");
+const constants = require("../../../../utils/constants");
 
-const validatorCreateEvent = async (req, isUpdate) => {
+const validatorCreateWebTemplate = async (req, isUpdate) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (isUpdate) {
@@ -27,7 +27,7 @@ const validatorCreateEvent = async (req, isUpdate) => {
           isString: {
             errorMessage: constants.errors.field_invalid_format.replace(
               ":name",
-              "title"
+              "name"
             ),
           },
           isLength: {
@@ -40,11 +40,8 @@ const validatorCreateEvent = async (req, isUpdate) => {
         },
         description: {
           in: ["body"],
-          notEmpty: {
-            errorMessage: constants.errors.field_required.replace(
-              ":name",
-              "description"
-            ),
+          optional: {
+            options: { nullable: true },
           },
           isString: {
             errorMessage: constants.errors.field_invalid_format.replace(
@@ -53,13 +50,63 @@ const validatorCreateEvent = async (req, isUpdate) => {
             ),
           },
           isLength: {
-            options: { max: 500 },
+            options: { max: 1000 },
             errorMessage: constants.errors.field_invalid_format.replace(
               ":name",
               "description"
             ),
           },
         },
+        price: {
+          in: ["body"],
+          notEmpty: {
+            errorMessage: constants.errors.field_required.replace(
+              ":name",
+              "price"
+            ),
+          },
+          isFloat: {
+            errorMessage: constants.errors.field_invalid_format.replace(
+              ":name",
+              "price"
+            ),
+          },
+        },
+        link: {
+          in: ["body"],
+          notEmpty: {
+            errorMessage: constants.errors.field_required.replace(
+              ":name",
+              "link"
+            ),
+          },
+          isString: {
+            errorMessage: constants.errors.field_invalid_format.replace(
+              ":name",
+              "link"
+            ),
+          },
+        },
+        // events: {
+        //   in: ["body"],
+        //   isArray: {
+        //     errorMessage: constants.errors.field_invalid_format.replace(
+        //       ":name",
+        //       "events"
+        //     ),
+        //   },
+        //   custom: {
+        //     options: (value) => {
+        //       if (!Array.isArray(value) || value.length === 0) return false;
+        //       for (const event of value)
+        //         if (typeof event !== "number") return false;
+
+        //       return true;
+        //     },
+        //     errorMessage:
+        //       "The 'events' array must contain at least one event id and all items must be integer.",
+        //   },
+        // },
       };
 
       await checkSchema(schemaToValidate).run(req);
@@ -82,4 +129,4 @@ const validatorCreateEvent = async (req, isUpdate) => {
   });
 };
 
-module.exports = validatorCreateEvent;
+module.exports = validatorCreateWebTemplate;

@@ -8,8 +8,8 @@ const { DataTypes, Model } = require("sequelize");
  * @returns {Model}
  */
 const model = (sequelize) => {
-  const WebTemplate = sequelize.define(
-    "WebTemplate",
+  const WebTemplateEvent = sequelize.define(
+    "WebTemplateEvent",
     {
       id: {
         autoIncrement: true,
@@ -17,29 +17,17 @@ const model = (sequelize) => {
         allowNull: false,
         primaryKey: true,
       },
-      name: {
-        type: DataTypes.STRING(255),
+      web_template: {
+        type: DataTypes.BIGINT,
         allowNull: false,
       },
-      price: {
-        type: DataTypes.DOUBLE,
+      event: {
+        type: DataTypes.BIGINT,
         allowNull: false,
-      },
-      description: {
-        type: DataTypes.STRING(1000),
-        allowNull: true,
-      },
-      image: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      link: {
-        type: DataTypes.TEXT,
-        allowNull: true,
       },
     },
     {
-      tableName: "web_template",
+      tableName: "web_template_event",
       timestamps: true,
       paranoid: true,
       createdAt: "created_at",
@@ -48,13 +36,16 @@ const model = (sequelize) => {
     }
   );
 
-  WebTemplate.associate = (models) => {
-    WebTemplate.hasMany(models.WebTemplateEvent, {
+  WebTemplateEvent.associate = (models) => {
+    WebTemplateEvent.belongsTo(models.WebTemplate, {
       foreignKey: "web_template",
+    });
+    WebTemplateEvent.belongsTo(models.Event, {
+      foreignKey: "event",
     });
   };
 
-  return WebTemplate;
+  return WebTemplateEvent;
 };
 
 module.exports = model;

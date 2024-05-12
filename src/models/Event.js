@@ -36,7 +36,11 @@ const model = (sequelize) => {
     }
   );
 
-  Event.associate = (models) => {};
+  Event.associate = (models) => {
+    Event.hasMany(models.WebTemplateEvent, {
+      foreignKey: "event",
+    });
+  };
 
   return Event;
 };

@@ -3,12 +3,15 @@
 const { check, checkSchema, validationResult } = require("express-validator");
 const constants = require("./constants");
 
-const validatorId = async (req) => {
+const validatorId = async (req, fieldName) => {
   return new Promise(async (resolve, reject) => {
     try {
       await check(
-        "id",
-        constants.errors.field_invalid_format.replace(":name", "id")
+        fieldName ?? "id",
+        constants.errors.field_invalid_format.replace(
+          ":name",
+          fieldName ?? "id"
+        )
       )
         .notEmpty()
         .isInt()

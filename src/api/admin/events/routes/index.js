@@ -10,27 +10,27 @@ module.exports = {
   routes: [
     {
       method: "post",
-      path: "/events",
+      path: "/admin/events",
       action: createEvent,
     },
     {
       method: "get",
-      path: "/events",
+      path: "/admin/events",
       action: getAllEvents,
     },
     {
       method: "get",
-      path: "/events/:id",
+      path: "/admin/events/:id",
       action: getEventById,
     },
     {
       method: "put",
-      path: "/events/:id",
+      path: "/admin/events/:id",
       action: updateEventById,
     },
     {
       method: "delete",
-      path: "/events/:id",
+      path: "/admin/events/:id",
       action: deleteEventById,
     },
   ],
