@@ -10,7 +10,7 @@ const { Administrator, Customer } = require("../../models");
 const bcrypt = require("bcrypt");
 
 const jwtStrategyAdministrator = require("./strategies/jwtAdministrator");
-const jwtStrategyCustomer = require("./configCustomer");
+const jwtStrategyCustomer = require("./strategies/jwtCustomer");
 
 passport.use("jwtAdministrator", jwtStrategyAdministrator);
 passport.use("jwtCustomer", jwtStrategyCustomer);
