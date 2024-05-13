@@ -1,33 +1,37 @@
 {
   "paths": {
-    "/admin/administrators": {
+    "/client/customers": {
       "post": {
-        "summary": "Create administrator",
-        "description": "Create a new administrator",
+        "summary": "Create customer",
+        "description": "Create a new customer",
         "parameters": [
           {
             "name": "body",
             "in": "body",
-            "description": "Administrator data",
+            "description": "Customer data",
             "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "Name of the administrator"
+                  "description": "Name of the customer"
                 },
                 "surname": {
                   "type": "string",
-                  "description": "Surname of the administrator"
+                  "description": "Surname of the customer"
+                },
+                "phone": {
+                  "type": "string",
+                  "description": "Phone number of the customer"
                 },
                 "email": {
                   "type": "string",
-                  "description": "Email of the administrator"
+                  "description": "Email of the customer"
                 },
                 "password": {
                   "type": "string",
-                  "description": "Password of the administrator"
+                  "description": "Password of the customer"
                 }
               }
             }
@@ -35,7 +39,7 @@
         ],
         "responses": {
           "201": {
-            "description": "Administrator created successfully",
+            "description": "Customer created successfully",
             "schema": {
               "type": "object",
               "properties": {
@@ -46,6 +50,7 @@
                     "id": { "type": "integer", "example": 1 },
                     "name": { "type": "string", "example": "John" },
                     "surname": { "type": "string", "example": "Doe" },
+                    "phone": { "type": "string", "example": "+1234567890" },
                     "email": { "type": "string", "example": "john@example.com" }
                   }
                 }

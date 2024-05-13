@@ -1,25 +1,25 @@
 {
   "paths": {
-    "/admin/auth/login": {
+    "/client/auth/login": {
       "post": {
-        "summary": "Authenticate administrator",
-        "description": "Authenticate an administrator with email and password",
+        "summary": "Authenticate customer",
+        "description": "Authenticate a customer with email and password",
         "parameters": [
           {
             "name": "body",
             "in": "body",
-            "description": "Administrator credentials",
+            "description": "Customer credentials",
             "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "email": {
                   "type": "string",
-                  "description": "Email of the administrator"
+                  "description": "Email of the customer"
                 },
                 "password": {
                   "type": "string",
-                  "description": "Password of the administrator"
+                  "description": "Password of the customer"
                 }
               }
             }
@@ -27,7 +27,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Administrator authenticated successfully",
+            "description": "Customer authenticated successfully",
             "schema": {
               "type": "object",
               "properties": {
@@ -49,6 +49,7 @@
                           "type": "string",
                           "example": "john@example.com"
                         },
+                        "phone": { "type": "string", "example": "+1234567890" },
                         "created_at": {
                           "type": "string",
                           "format": "date-time",

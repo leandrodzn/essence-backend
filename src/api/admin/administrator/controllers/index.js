@@ -1,10 +1,8 @@
 const { Administrator } = require("../../../../models");
 const constants = require("../../../../utils/constants");
-const { validatorId } = require("../../../../utils/validators");
 const Database = require("../../../../config/database");
 const { validatorCreateAdministrator } = require("../validators");
 const { hashPasswordAdministrator } = require("../../../../config/auth");
-const { Op } = require("sequelize");
 
 const cleanUser = (administratorModel) => {
   const administratorObject = administratorModel.get({ plain: true });
