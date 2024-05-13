@@ -1,7 +1,7 @@
 "use strict";
 
 const { Strategy } = require("passport-http-bearer");
-const auth = require("../config");
+const auth = require("../configCustomer");
 const jwt = require("jsonwebtoken");
 
 module.exports = new Strategy(async (token, cb) => {

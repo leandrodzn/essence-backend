@@ -9,9 +9,11 @@ const configCustomer = require("./configCustomer");
 const { Administrator, Customer } = require("../../models");
 const bcrypt = require("bcrypt");
 
-const jwtStrategy = require("./strategies/jwt");
+const jwtStrategyAdministrator = require("./strategies/jwtAdministrator");
+const jwtStrategyCustomer = require("./configCustomer");
 
-passport.use("jwt", jwtStrategy);
+passport.use("jwtAdministrator", jwtStrategyAdministrator);
+passport.use("jwtCustomer", jwtStrategyCustomer);
 
 const auth = () => {
   return passport.initialize();
@@ -43,7 +45,7 @@ const generateTokenAdministrator = ({ userId }) => {
 
 const isAuthenticatedAdministrator = (req, res, next) => {
   return passport.authenticate(
-    "jwt",
+    "jwtAdministrator",
     { session: false },
     // error, data, token
     async (error, data) => {
@@ -115,7 +117,7 @@ const generateTokenCustomer = ({ userId }) => {
 
 const isAuthenticatedCustomer = (req, res, next) => {
   return passport.authenticate(
-    "jwt",
+    "jwtCustomer",
     { session: false },
     // error, data, token
     async (error, data) => {

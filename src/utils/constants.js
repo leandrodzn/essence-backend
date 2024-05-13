@@ -9,6 +9,7 @@ module.exports = {
     INVALID_REQUEST_FIELDS: "InvalidRequestFields",
     INVALID_BODY_FIELDS: "InvalidBodyFields",
     INVALID_PARAMS_FIELD: "InvalidParamsField",
+    EMAIL_INVALID: "EmailInvalid",
 
     INVALID_AUTH_CREDENTIAL: "UnauthorizedError",
     EVENT_NOT_FOUND: "EventNotFound",
