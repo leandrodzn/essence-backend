@@ -94,7 +94,10 @@ const createWebTemplate = async (req, res) => {
       data: webTemplateModel,
     });
   } catch (error) {
-    if (!transaction.finished || transaction.finished !== "commit")
+    if (
+      transaction &&
+      (transaction?.finished || transaction.finished !== "commit")
+    )
       await transaction.rollback();
 
     if (back?.image) await deleteFile(back.image);
@@ -237,7 +240,10 @@ const updateWebTemplateById = async (req, res) => {
       data: webTemplateModel,
     });
   } catch (error) {
-    if (!transaction.finished || transaction.finished !== "commit")
+    if (
+      transaction &&
+      (transaction?.finished || transaction.finished !== "commit")
+    )
       await transaction.rollback();
 
     if (back?.image) await deleteFile(back.image);
