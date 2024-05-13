@@ -1,0 +1,262 @@
+{
+  "paths": {
+    "/admin/web-templates": {
+      "get": {
+        "summary": "Get all web templates",
+        "responses": {
+          "200": {
+            "description": "List of web templates retrieved successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/WebTemplate" }
+                }
+              }
+            }
+          },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      },
+      "post": {
+        "summary": "Create a new web template",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "formData",
+            "description": "Name of the web template",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "link",
+            "in": "formData",
+            "description": "Link of the web template",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "Description of the web template",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "in": "formData",
+            "description": "Price of the web template",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "description": "Image file of the web template",
+            "required": true,
+            "type": "file"
+          },
+          {
+            "name": "events",
+            "in": "formData",
+            "description": "IDs of events related to the web template",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Web template created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": { "$ref": "#/definitions/WebTemplate" }
+              }
+            }
+          },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      }
+    },
+    "/admin/web-templates/:id": {
+      "get": {
+        "summary": "Get a web template by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the web template",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Web template found successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": { "$ref": "#/definitions/WebTemplate" }
+              }
+            }
+          },
+          "404": { "$ref": "#/responses/NotFound" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      },
+      "put": {
+        "summary": "Update a web template by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the web template",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "description": "New name of the web template",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "link",
+            "in": "formData",
+            "description": "New link of the web template",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "description": "New description of the web template",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "price",
+            "in": "formData",
+            "description": "New price of the web template",
+            "required": true,
+            "type": "number"
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "description": "New image file of the web template (optional)",
+            "required": false,
+            "type": "file"
+          },
+          {
+            "name": "events",
+            "in": "formData",
+            "description": "New IDs of events related to the web template",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Web template updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": { "$ref": "#/definitions/WebTemplate" }
+              }
+            }
+          },
+          "404": { "$ref": "#/responses/NotFound" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      },
+      "delete": {
+        "summary": "Delete a web template by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the web template",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Web template deleted successfully",
+            "schema": {
+              "type": "object",
+              "properties": { "status": { "type": "string", "example": "OK" } }
+            }
+          },
+          "404": { "$ref": "#/responses/NotFound" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "WebTemplate": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "description": "ID of the web template" },
+        "name": { "type": "string", "description": "Name of the web template" },
+        "link": { "type": "string", "description": "Link of the web template" },
+        "description": {
+          "type": "string",
+          "description": "Description of the web template"
+        },
+        "image": {
+          "type": "string",
+          "description": "Link of the image of the web template"
+        },
+        "price": {
+          "type": "number",
+          "description": "Price of the web template"
+        },
+        "created_at": {
+          "type": "string",
+          "description": "Timestamp of when the web template was created"
+        },
+        "updated_at": {
+          "type": "string",
+          "description": "Timestamp of when the web template was last updated"
+        }
+      }
+    }
+  },
+  "responses": {
+    "Error": {
+      "description": "Generic error",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "Error" },
+          "message": { "type": "string", "example": "Specific error message" }
+        }
+      }
+    },
+    "NotFound": {
+      "description": "Resource not found",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "Not Found" },
+          "message": { "type": "string", "example": "WebTemplateNotFound" }
+        }
+      }
+    }
+  }
+}

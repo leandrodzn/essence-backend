@@ -58,7 +58,7 @@
         }
       }
     },
-    "/events/{id}": {
+    "/events/:id": {
       "get": {
         "summary": "Get an event by its ID",
         "parameters": [
