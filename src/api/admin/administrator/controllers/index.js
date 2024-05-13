@@ -100,7 +100,7 @@ const createAdministrator = async (req, res) => {
   } catch (error) {
     if (
       transaction &&
-      (transaction?.finished || transaction.finished !== "commit")
+      (!transaction?.finished || transaction?.finished !== "commit")
     )
       await transaction.rollback();
 

@@ -96,7 +96,7 @@ const createWebTemplate = async (req, res) => {
   } catch (error) {
     if (
       transaction &&
-      (transaction?.finished || transaction.finished !== "commit")
+      (!transaction?.finished || transaction?.finished !== "commit")
     )
       await transaction.rollback();
 
@@ -242,7 +242,7 @@ const updateWebTemplateById = async (req, res) => {
   } catch (error) {
     if (
       transaction &&
-      (transaction?.finished || transaction.finished !== "commit")
+      (!transaction?.finished || transaction?.finished !== "commit")
     )
       await transaction.rollback();
 
