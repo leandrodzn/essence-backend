@@ -1,0 +1,60 @@
+{
+  "paths": {
+    "/events": {
+      "get": {
+        "summary": "Get all events",
+        "responses": {
+          "200": {
+            "description": "List of events retrieved successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": {
+                  "type": "array",
+                  "items": { "$ref": "#/definitions/Event" }
+                }
+              }
+            }
+          },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Event": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "description": "ID of the event" },
+        "name": { "type": "string", "description": "Name of the event" },
+        "description": {
+          "type": "string",
+          "description": "Description of the event"
+        }
+      }
+    }
+  },
+  "responses": {
+    "Error": {
+      "description": "Generic error",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "Error" },
+          "message": { "type": "string", "example": "Specific error message" }
+        }
+      }
+    },
+    "NotFound": {
+      "description": "Resource not found",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "Not Found" },
+          "message": { "type": "string", "example": "EventNotFound" }
+        }
+      }
+    }
+  }
+}

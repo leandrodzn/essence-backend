@@ -165,11 +165,11 @@
           "type": "string",
           "description": "Description of the event"
         },
-        "createdAt": {
+        "created_at": {
           "type": "string",
           "description": "Timestamp of when the event was created"
         },
-        "updatedAt": {
+        "updated_at": {
           "type": "string",
           "description": "Timestamp of when the event was last updated"
         }
