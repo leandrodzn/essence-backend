@@ -25,7 +25,7 @@
         }
       }
     },
-    "/client/web-templates/{id}": {
+    "/client/web-templates/:id": {
       "get": {
         "summary": "Get web template by ID",
         "parameters": [
@@ -56,7 +56,7 @@
         }
       }
     },
-    "/client/web-templates/{id}/favorite": {
+    "/client/web-templates/:id/favorite": {
       "get": {
         "summary": "Get favorite web template by ID",
         "parameters": [

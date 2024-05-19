@@ -1,1 +1,175 @@
-{}
+{
+  "paths": {
+    "/client/template-contact/:id": {
+      "post": {
+        "summary": "Create Web Template Contact",
+        "description": "Create a new contact for a specific web template",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the web template",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Contact data",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "subject": {
+                  "type": "string",
+                  "description": "Subject of the contact"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description of the contact"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contact created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer", "example": 1 },
+                    "web_template": { "type": "integer", "example": 1 },
+                    "customer": { "type": "integer", "example": 1 },
+                    "price_day": { "type": "number", "example": 100.0 },
+                    "subject": {
+                      "type": "string",
+                      "example": "Consult about template"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "I need more details about this template."
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "example": "2023-05-18T12:00:00Z"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "example": "2023-05-18T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/responses/BadRequest" },
+          "404": { "$ref": "#/responses/NotFound" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      }
+    },
+    "/client/template-contact": {
+      "get": {
+        "summary": "Get All Web Template Contacts",
+        "description": "Retrieve all contacts for web templates made by the authenticated customer",
+        "responses": {
+          "200": {
+            "description": "List of all web template contacts",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "count": { "type": "integer", "example": 2 },
+                    "rows": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "integer", "example": 1 },
+                          "price_day": { "type": "number", "example": 100.0 },
+                          "web_template": { "type": "integer", "example": 1 },
+                          "customer": { "type": "integer", "example": 1 },
+                          "created_at": {
+                            "type": "string",
+                            "example": "2023-05-18T12:00:00Z"
+                          },
+                          "WebTemplate": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "integer", "example": 1 },
+                              "name": {
+                                "type": "string",
+                                "example": "Template 1"
+                              },
+                              "price": { "type": "number", "example": 100.0 },
+                              "description": {
+                                "type": "string",
+                                "example": "A great template"
+                              },
+                              "image": {
+                                "type": "string",
+                                "example": "http://example.com/public/image1.png"
+                              }
+                            }
+                          },
+                          "template_available": {
+                            "type": "boolean",
+                            "example": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/responses/BadRequest" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      }
+    }
+  },
+  "responses": {
+    "BadRequest": {
+      "description": "Invalid input",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "ERROR" },
+          "message": { "type": "string", "example": "Invalid input data" }
+        }
+      }
+    },
+    "NotFound": {
+      "description": "Resource not found",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "ERROR" },
+          "message": { "type": "string", "example": "Resource not found" }
+        }
+      }
+    },
+    "Error": {
+      "description": "General error",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "ERROR" },
+          "message": { "type": "string", "example": "An error occurred" }
+        }
+      }
+    }
+  }
+}
