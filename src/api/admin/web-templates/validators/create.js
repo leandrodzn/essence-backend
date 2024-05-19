@@ -87,26 +87,26 @@ const validatorCreateWebTemplate = async (req, isUpdate) => {
             ),
           },
         },
-        // events: {
-        //   in: ["body"],
-        //   isArray: {
-        //     errorMessage: constants.errors.field_invalid_format.replace(
-        //       ":name",
-        //       "events"
-        //     ),
-        //   },
-        //   custom: {
-        //     options: (value) => {
-        //       if (!Array.isArray(value) || value.length === 0) return false;
-        //       for (const event of value)
-        //         if (typeof event !== "number") return false;
+        events: {
+          in: ["body"],
+          isArray: {
+            errorMessage: constants.errors.field_invalid_format.replace(
+              ":name",
+              "events"
+            ),
+          },
+          custom: {
+            options: (value) => {
+              if (!Array.isArray(value) || value.length === 0) return false;
+              for (const event of value)
+                if (typeof event !== "number") return false;
 
-        //       return true;
-        //     },
-        //     errorMessage:
-        //       "The 'events' array must contain at least one event id and all items must be integer.",
-        //   },
-        // },
+              return true;
+            },
+            errorMessage:
+              "The 'events' array must contain at least one event id and all items must be integer.",
+          },
+        },
       };
 
       await checkSchema(schemaToValidate).run(req);

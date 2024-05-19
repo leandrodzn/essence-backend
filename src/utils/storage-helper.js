@@ -159,8 +159,34 @@ const deleteFile = async (relativePath) => {
   }
 };
 
+/**
+ * Validate if a file exists given a relative path
+ * @param {string} relativePath - The relative path of the file to check
+ * @returns {Promise<boolean>} - Returns true if the file exists, false otherwise
+ */
+const fileExists = async (relativePath) => {
+  try {
+    if (!relativePath) return false;
+
+    // Get the absolute path from the relative path
+    const absolutePath = path.join(_getBasePath(), relativePath);
+
+    // Check if the file exists
+    const exists = await fs.promises
+      .access(absolutePath, fs.constants.F_OK)
+      .then(() => true)
+      .catch(() => false);
+
+    return exists;
+  } catch (error) {
+    console.error("Error checking file existence:", error);
+    return false;
+  }
+};
+
 module.exports = {
   uploadSingleFile,
   getUrlPublicFile,
   deleteFile,
+  fileExists,
 };

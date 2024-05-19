@@ -10,7 +10,6 @@ const Database = require("../../../../config/database");
 const { validatorGetWebTemplates } = require("../validators");
 const { getUrlPublicFile } = require("../../../../utils/storage-helper");
 const { validatorId } = require("../../../../utils/validators");
-const { where } = require("sequelize");
 
 /**
  * @param {Request} req
