@@ -1,9 +1,9 @@
-# In Xook Backend :wrench:
+# Essence Creatives Backend
 
-## Table of contents :card_index:
+## Table of contents
 
-- [Description :page_facing_up:](#description-page_facing_up)
-- [Run locally :computer:](#run-locally-computer)
+- [Description](#description)
+- [Run locally](#run-locally)
   - [Node version](#node-version)
   - [Clone the project](#clone-the-project)
   - [Go to the project directory](#go-to-the-project-directory)
@@ -14,15 +14,15 @@
   - [Create .env file](#create-env-file)
   - [Start HTTP server](#start-http-server)
   - [Push your branch](#push-your-branch)
-- [Build with :hammer:](#build-with-hammer)
+- [Build with](#build-with)
 
-## Description :page_facing_up:
+## Description
 
 Backend development for Project System 'Essence Creatives'
 
 <br>
 
-## Run locally :computer:
+## Run locally
 
 ### Node version
 
@@ -109,6 +109,20 @@ EC_DATABASE_HOST=localhost
 EC_DATABASE_PORT=3306
 EC_DATABASE_LOGGING=false
 
+# Authentication Administrator
+EC_ADMIN_JWT_SECRET=
+EC_ADMIN_JWT_EXPIRATION=
+EC_ADMIN_JWT_IGNORE_EXPIRATION=false
+EC_ADMIN_BCRYPT_SALT_ROUNDS=
+EC_ADMIN_JWT_REFRESH_TOKEN_SECRET=
+
+# Authentication Customer
+EC_CLIENT_JWT_SECRET=
+EC_CLIENT_JWT_EXPIRATION=
+EC_CLIENT_JWT_IGNORE_EXPIRATION=false
+EC_CLIENT_BCRYPT_SALT_ROUNDS=
+EC_CLIENT_JWT_REFRESH_TOKEN_SECRET=
+
 ```
 
 ### Start HTTP server
@@ -129,7 +143,7 @@ bash
 
 <br>
 
-## Build with :hammer:
+## Build with
 
 - [NodeJs](https://nodejs.org/es) - Server runtime environment Version (^ v20.11.0)
 - [Express](https://expressjs.com/) - Framework
