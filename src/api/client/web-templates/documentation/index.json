@@ -1,6 +1,6 @@
 {
   "paths": {
-    "/admin/web-templates": {
+    "/client/web-templates": {
       "get": {
         "summary": "Get all web templates",
         "responses": {
@@ -18,7 +18,121 @@
             }
           },
           "default": { "$ref": "#/responses/Error" }
+        },
+        "x-rateLimit": {
+          "limit": 40,
+          "window": "5m"
         }
+      }
+    },
+    "/client/web-templates/{id}": {
+      "get": {
+        "summary": "Get web template by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the web template"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Web template retrieved successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": { "$ref": "#/definitions/WebTemplateDetail" }
+              }
+            }
+          },
+          "default": { "$ref": "#/responses/Error" }
+        },
+        "x-rateLimit": {
+          "limit": 40,
+          "window": "5m"
+        }
+      }
+    },
+    "/client/web-templates/{id}/favorite": {
+      "get": {
+        "summary": "Get favorite web template by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the web template"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorite web template retrieved successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": { "$ref": "#/definitions/FavoriteTemplate" }
+              }
+            }
+          },
+          "default": { "$ref": "#/responses/Error" }
+        },
+        "security": [{ "customerAuth": [] }]
+      },
+      "post": {
+        "summary": "Create favorite web template",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the web template"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorite web template created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": { "$ref": "#/definitions/FavoriteTemplate" }
+              }
+            }
+          },
+          "default": { "$ref": "#/responses/Error" }
+        },
+        "security": [{ "customerAuth": [] }]
+      },
+      "delete": {
+        "summary": "Delete favorite web template",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of the web template"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Favorite web template deleted successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" }
+              }
+            }
+          },
+          "default": { "$ref": "#/responses/Error" }
+        },
+        "security": [{ "customerAuth": [] }]
       }
     }
   },
@@ -50,6 +164,62 @@
           "description": "Timestamp of when the web template was last updated"
         }
       }
+    },
+    "WebTemplateDetail": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "integer", "description": "ID of the web template" },
+        "name": { "type": "string", "description": "Name of the web template" },
+        "link": { "type": "string", "description": "Link of the web template" },
+        "description": {
+          "type": "string",
+          "description": "Description of the web template"
+        },
+        "image": {
+          "type": "string",
+          "description": "Link of the image of the web template"
+        },
+        "price": {
+          "type": "number",
+          "description": "Price of the web template"
+        },
+        "created_at": {
+          "type": "string",
+          "description": "Timestamp of when the web template was created"
+        },
+        "updated_at": {
+          "type": "string",
+          "description": "Timestamp of when the web template was last updated"
+        },
+        "WebTemplateEvents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer", "description": "ID of the event" },
+              "name": { "type": "string", "description": "Name of the event" },
+              "description": {
+                "type": "string",
+                "description": "Description of the event"
+              }
+            }
+          }
+        }
+      }
+    },
+    "FavoriteTemplate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "description": "ID of the favorite template entry"
+        },
+        "web_template": {
+          "type": "integer",
+          "description": "ID of the web template"
+        },
+        "customer": { "type": "integer", "description": "ID of the customer" }
+      }
     }
   },
   "responses": {
@@ -62,6 +232,13 @@
           "message": { "type": "string", "example": "Specific error message" }
         }
       }
+    }
+  },
+  "securityDefinitions": {
+    "customerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
     }
   }
 }

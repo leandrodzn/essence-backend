@@ -3,11 +3,14 @@ const {
   WebTemplateEvent,
   Event,
   Sequelize,
+  WebTemplateFavorite,
 } = require("../../../../models");
 const constants = require("../../../../utils/constants");
 const Database = require("../../../../config/database");
 const { validatorGetWebTemplates } = require("../validators");
 const { getUrlPublicFile } = require("../../../../utils/storage-helper");
+const { validatorId } = require("../../../../utils/validators");
+const { where } = require("sequelize");
 
 /**
  * @param {Request} req
@@ -72,6 +75,193 @@ const getAllWebTemplates = async (req, res) => {
   }
 };
 
+/**
+ * @param {Request} req
+ * @param {Response} res
+ * @returns {Promise<void>}
+ */
+const getWebTemplateById = async (req, res) => {
+  try {
+    // Validate params
+    await validatorId(req);
+
+    const webTemplateModel = await WebTemplate.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["id", "name", "price", "description", "link", "image"],
+    });
+
+    if (!webTemplateModel)
+      throw new CustomError({
+        status: 404,
+        name: "NotFound",
+        message: constants.response.WEB_TEMPLATE_NOT_FOUND,
+      });
+
+    if (webTemplateModel?.image)
+      webTemplateModel.setDataValue(
+        "image",
+        getUrlPublicFile(webTemplateModel.image)
+      );
+
+    const webTemplateEvents = await WebTemplateEvent.findAll({
+      where: {
+        web_template: webTemplateModel.id,
+      },
+      include: [
+        {
+          model: Event,
+          attributes: ["id", "name", "description"],
+        },
+      ],
+    });
+
+    webTemplateModel.setDataValue("WebTemplateEvents", webTemplateEvents || []);
+
+    res.status(200).json({
+      status: "OK",
+      data: webTemplateModel,
+    });
+  } catch (error) {
+    res.jsonError(error);
+  }
+};
+
+/**
+ * @param {Request} req
+ * @param {Response} res
+ * @returns {Promise<void>}
+ */
+const getWebTemplateFavoriteById = async (req, res) => {
+  try {
+    // Validate params
+    await validatorId(req);
+
+    const webTemplateModel = await WebTemplate.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["id"],
+    });
+
+    if (!webTemplateModel)
+      throw new CustomError({
+        status: 404,
+        name: "NotFound",
+        message: constants.response.WEB_TEMPLATE_NOT_FOUND,
+      });
+
+    const favoriteModel = await WebTemplateFavorite.findOne({
+      where: {
+        web_template: webTemplateModel.id,
+        customer: req.currentUser.id,
+      },
+      attributes: ["id"],
+    });
+
+    res.status(200).json({
+      status: "OK",
+      data: favoriteModel,
+    });
+  } catch (error) {
+    res.jsonError(error);
+  }
+};
+
+/**
+ * @param {Request} req
+ * @param {Response} res
+ * @returns {Promise<void>}
+ */
+const createWebTemplateFavorite = async (req, res) => {
+  try {
+    // Validate params
+    await validatorId(req);
+
+    const webTemplateModel = await WebTemplate.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["id"],
+    });
+
+    if (!webTemplateModel)
+      throw new CustomError({
+        status: 404,
+        name: "NotFound",
+        message: constants.response.WEB_TEMPLATE_NOT_FOUND,
+      });
+
+    let favoriteModel = await WebTemplateFavorite.findOne({
+      where: {
+        web_template: webTemplateModel.id,
+        customer: req.currentUser.id,
+      },
+      attributes: ["id"],
+    });
+
+    if (!favoriteModel)
+      favoriteModel = await WebTemplateFavorite.create({
+        web_template: webTemplateModel.id,
+        customer: req.currentUser.id,
+      });
+
+    res.status(200).json({
+      status: "OK",
+      data: favoriteModel,
+    });
+  } catch (error) {
+    res.jsonError(error);
+  }
+};
+
+/**
+ * @param {Request} req
+ * @param {Response} res
+ * @returns {Promise<void>}
+ */
+const deleteWebTemplateFavorite = async (req, res) => {
+  try {
+    // Validate params
+    await validatorId(req);
+
+    const webTemplateModel = await WebTemplate.findOne({
+      where: {
+        id: req.params.id,
+      },
+      attributes: ["id"],
+    });
+
+    if (!webTemplateModel)
+      throw new CustomError({
+        status: 404,
+        name: "NotFound",
+        message: constants.response.WEB_TEMPLATE_NOT_FOUND,
+      });
+
+    const favoriteModel = await WebTemplateFavorite.findOne({
+      where: {
+        web_template: webTemplateModel.id,
+        customer: req.currentUser.id,
+      },
+      attributes: ["id"],
+    });
+
+    if (favoriteModel) await favoriteModel.destroy();
+
+    res.status(200).json({
+      status: "OK",
+    });
+  } catch (error) {
+    res.jsonError(error);
+  }
+};
+
 module.exports = {
   getAllWebTemplates,
+  getWebTemplateById,
+  getWebTemplateFavoriteById,
+  createWebTemplateFavorite,
+  deleteWebTemplateFavorite,
 };
