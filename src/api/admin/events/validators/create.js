@@ -27,14 +27,14 @@ const validatorCreateEvent = async (req, isUpdate) => {
           isString: {
             errorMessage: constants.errors.field_invalid_format.replace(
               ":name",
-              "title"
+              "name"
             ),
           },
           isLength: {
             options: { max: 255 },
             errorMessage: constants.errors.field_invalid_format.replace(
               ":name",
-              "title"
+              "name"
             ),
           },
         },

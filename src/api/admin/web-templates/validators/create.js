@@ -89,20 +89,61 @@ const validatorCreateWebTemplate = async (req, isUpdate) => {
         },
         events: {
           in: ["body"],
-          isArray: {
-            errorMessage: constants.errors.field_invalid_format.replace(
-              ":name",
-              "events"
-            ),
-          },
+          // isArray: {
+          //   options: { min: 1 },
+          //   errorMessage: constants.errors.field_invalid_format.replace(
+          //     ":name",
+          //     "events"
+          //   ),
+          // },
           custom: {
-            options: (value) => {
-              if (!Array.isArray(value) || value.length === 0) return false;
-              for (const event of value)
-                if (typeof event !== "number") return false;
+            options: (value, { req }) => {
+              if (!Array.isArray(value)) value = [value];
 
+              if (value.length === 0)
+                throw new Error(
+                  "The 'events' array must contain at least one event id."
+                );
+
+              for (let i = 0; i < value.length; i++) {
+                value[i] = parseInt(value[i], 10); // Convertir cada valor a entero
+                if (isNaN(value[i])) {
+                  console.log(value[i]);
+                  throw new Error(
+                    "The 'events' array must contain only integer values."
+                  );
+                }
+              }
+              req.body.events = value; // Asegurar que req.body.events sea el array modificado
               return true;
             },
+            // options: (value) => {
+            //   // if (!Array.isArray(value) || value.length === 0) {
+            //   //   throw new Error(
+            //   //     "The 'events' array must contain at least one event id."
+            //   //   );
+            //   // }
+            //   // for (let i = 0; i < value.length; i++) {
+            //   //   value[i] = parseInt(value[i], 10);
+            //   //   if (isNaN(value[i])) {
+            //   //     throw new Error(
+            //   //       "The 'events' array must contain at least one event id and all items must be integer."
+            //   //     );
+            //   //   }
+            //   // }
+            //   // return true;
+            //   if (!Array.isArray(value)) value = [value];
+
+            //   if (value.length === 0) return false;
+
+            //   for (let option of value) {
+            //     option = parseInt(option, 10);
+            //     if (typeof option !== "number") {
+            //       return false;
+            //     }
+            //   }
+            //   return true;
+            // },
             errorMessage:
               "The 'events' array must contain at least one event id and all items must be integer.",
           },
