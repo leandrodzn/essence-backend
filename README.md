@@ -14,6 +14,7 @@
   - [Create .env file](#create-env-file)
   - [Start HTTP server](#start-http-server)
   - [Push your branch](#push-your-branch)
+- [Authors](#authors)
 - [Build with](#build-with)
 
 ## Description
@@ -142,6 +143,19 @@ bash
 ```
 
 <br>
+
+## Authors
+
+- **Domingo Emmanuel Ciau Uc**
+
+  - [![GitHub](https://img.shields.io/badge/GitHub-EmanuelCiau-red?style=flat&logo=github)](https://github.com/EmanuelCiau)
+
+- **María Belen Couoh Chan**
+
+  - [![GitHub](https://img.shields.io/badge/GitHub-Belen2708-pink?style=flat&logo=github)](https://github.com/Belen2708)
+
+- **Leandro Angel Dzib Nauat**
+  - [![GitHub](https://img.shields.io/badge/GitHub-leandrodzn-green?style=flat&logo=github)](https://github.com/leandrodzn)
 
 ## Build with
 
