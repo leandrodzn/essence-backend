@@ -2,20 +2,22 @@
 
 ## Table of contents
 
-- [Description](#description)
-- [Run locally](#run-locally)
-  - [Node version](#node-version)
-  - [Clone the project](#clone-the-project)
-  - [Go to the project directory](#go-to-the-project-directory)
-  - [Create your branch](#create-your-branch)
-  - [Change to your branch](#change-to-your-branch)
-  - [Install dependencies](#install-dependencies)
-  - [Create empty database](#create-empty-database)
-  - [Create .env file](#create-env-file)
-  - [Start HTTP server](#start-http-server)
-  - [Push your branch](#push-your-branch)
-- [Authors](#authors)
-- [Build with](#build-with)
+- [Essence Creatives Backend](#essence-creatives-backend)
+  - [Table of contents](#table-of-contents)
+  - [Description](#description)
+  - [Run locally](#run-locally)
+    - [Node version](#node-version)
+    - [Clone the project](#clone-the-project)
+    - [Go to the project directory](#go-to-the-project-directory)
+    - [Create your branch](#create-your-branch)
+    - [Change to your branch](#change-to-your-branch)
+    - [Install dependencies](#install-dependencies)
+    - [Create empty database](#create-empty-database)
+    - [Create .env file](#create-env-file)
+    - [Start HTTP server](#start-http-server)
+    - [Push your branch](#push-your-branch)
+  - [Authors](#authors)
+  - [Build with](#build-with)
 
 ## Description
 
@@ -123,6 +125,13 @@ EC_CLIENT_JWT_EXPIRATION=
 EC_CLIENT_JWT_IGNORE_EXPIRATION=false
 EC_CLIENT_BCRYPT_SALT_ROUNDS=
 EC_CLIENT_JWT_REFRESH_TOKEN_SECRET=
+
+# Initial Administrator user
+EC_INITIAL_ROOT_MAIL=
+EC_INITIAL_ROOT_NAME=
+EC_INITIAL_ROOT_SURNAME=
+EC_INITIAL_ROOT_PASSWORD=
+EC_INITIAL_ROOT_CODE=
 
 ```
 

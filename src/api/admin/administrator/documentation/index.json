@@ -15,19 +15,23 @@
               "properties": {
                 "name": {
                   "type": "string",
-                  "description": "Name of the administrator"
+                  "description": "Name of the administrator",
+                  "example": "John"
                 },
                 "surname": {
                   "type": "string",
-                  "description": "Surname of the administrator"
+                  "description": "Surname of the administrator",
+                  "example": "Doe"
                 },
                 "email": {
                   "type": "string",
-                  "description": "Email of the administrator"
+                  "description": "Email of the administrator",
+                  "example": "john@example.com"
                 },
                 "password": {
                   "type": "string",
-                  "description": "Password of the administrator"
+                  "description": "Password of the administrator",
+                  "example": "Password123"
                 }
               }
             }
@@ -47,6 +51,80 @@
                     "name": { "type": "string", "example": "John" },
                     "surname": { "type": "string", "example": "Doe" },
                     "email": { "type": "string", "example": "john@example.com" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/responses/BadRequest" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      }
+    },
+    "/admin/me": {
+      "get": {
+        "summary": "Get current administrator details",
+        "description": "Get the details of the currently authenticated administrator",
+        "responses": {
+          "200": {
+            "description": "Administrator details retrieved successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer", "example": 1 },
+                    "name": { "type": "string", "example": "John" },
+                    "surname": { "type": "string", "example": "Doe" },
+                    "email": { "type": "string", "example": "john@example.com" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/responses/Unauthorized" },
+          "default": { "$ref": "#/responses/Error" }
+        }
+      }
+    },
+    "/admin/initial-user": {
+      "post": {
+        "summary": "Create initial root administrator",
+        "description": "Create the initial root administrator using environment variables",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Administrator code verification",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "description": "Verification code to create the root administrator",
+                  "example": "ROOT_ADMIN_CODE"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Initial root administrator created successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": { "type": "string", "example": "OK" },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer", "example": 1 },
+                    "name": { "type": "string", "example": "Admin" },
+                    "surname": { "type": "string", "example": "Root" },
+                    "email": { "type": "string", "example": "root@example.com" }
                   }
                 }
               }

@@ -1,7 +1,10 @@
 const { Administrator } = require("../../../../models");
 const constants = require("../../../../utils/constants");
 const Database = require("../../../../config/database");
-const { validatorCreateAdministrator } = require("../validators");
+const {
+  validatorCreateAdministrator,
+  validatorCreateRootAdministrator,
+} = require("../validators");
 const { hashPasswordAdministrator } = require("../../../../config/auth");
 
 const cleanUser = (administratorModel) => {
@@ -13,43 +16,46 @@ const cleanUser = (administratorModel) => {
   return administratorObject;
 };
 
-// const createInitialRootAdministrator = async (req, res) => {
-//   const back = {};
+const createInitialRootAdministrator = async (req, res) => {
+  const back = {};
 
-//   return Promise.resolve()
-//     .then(async () => {
-//       await validatorCreateRootUser(req);
-//     })
-//     .then(async () => {
-//       const criteria = {
-//         where: {
-//           email: "root@mail.com",
-//           username: "root",
-//         },
-//         defaults: {
-//           name: "Super",
-//           surname: "Root",
-//           email: "root@mail.com",
-//           username: "root",
-//           password: await hashPassword("uKe|nP=d?s73<l$pF'@j"),
-//           type: "root",
-//         },
-//       };
+  return Promise.resolve()
+    .then(async () => {
+      await validatorCreateRootAdministrator(req);
+    })
+    .then(async () => {
+      const criteria = {
+        where: {
+          email: process.env.EC_INITIAL_ADMIN_MAIL,
+        },
+      };
 
-//       const userModel = await User.findOrCreate(criteria);
+      const defaults = {
+        name: process.env.EC_INITIAL_ADMIN_NAME,
+        surname: process.env.EC_INITIAL_ADMIN_SURNAME,
+        email: process.env.EC_INITIAL_ADMIN_MAIL,
+        password: await hashPasswordAdministrator(
+          process.env.EC_INITIAL_ADMIN_PASSWORD
+        ),
+      };
 
-//       back.userModel = userModel[0];
-//       back.userModelCreated = userModel[1];
-//     })
-//     .then(async () => {
-//       res.status(200).json({
-//         data: {
-//           ...back,
-//         },
-//       });
-//     })
-//     .catch((error) => res.jsonError(error));
-// };
+      let administratorModel = await Administrator.findOne(criteria);
+
+      if (administratorModel) {
+        administratorModel = await administratorModel.update(defaults);
+      } else {
+        administratorModel = await Administrator.create(defaults);
+      }
+
+      back.administratorModel = administratorModel;
+    })
+    .then(async () => {
+      res.status(200).json({
+        data: back.administratorModel,
+      });
+    })
+    .catch((error) => res.jsonError(error));
+};
 
 const createAdministrator = async (req, res) => {
   let transaction;
@@ -108,6 +114,35 @@ const createAdministrator = async (req, res) => {
   }
 };
 
+const getAdministratorMe = async (req, res) => {
+  const back = {};
+
+  return Promise.resolve()
+    .then(async () => {
+      const userModel = await Administrator.findByPk(req.currentUser.id);
+
+      if (!userModel) {
+        throw new CustomError({
+          status: 401,
+          name: "Invalid",
+          message: constants.response.INVALID_AUTH_CREDENTIAL,
+        });
+      }
+
+      cleanUser(userModel);
+
+      back.userModel = userModel.get({ plain: true });
+    })
+    .then(async () => {
+      res.status(200).json({
+        data: back.userModel,
+      });
+    })
+    .catch((error) => res.jsonError(error));
+};
+
 module.exports = {
   createAdministrator,
+  getAdministratorMe,
+  createInitialRootAdministrator,
 };
