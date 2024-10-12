@@ -6,6 +6,7 @@ const {
   checkPassword,
   generateTokenCustomer,
 } = require("../../../../config/auth");
+const { Op } = require("sequelize");
 
 /**
  * @param {Request} req
@@ -21,10 +22,10 @@ const authLogin = async (req, res) => {
 
     const criteria = {
       where: {
-        $and: [
-          { email: { $ne: null } },
+        [Op.and]: [
+          { email: { [Op.ne]: null } },
           {
-            email: { $eq: email },
+            email: { [Op.eq]: email },
           },
         ],
       },

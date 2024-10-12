@@ -8,6 +8,7 @@ const {
   deleteFile,
   getUrlPublicFile,
 } = require("../../../../utils/storage-helper");
+const { Op } = require("sequelize");
 
 /**
  * @param {Request} req
@@ -188,7 +189,7 @@ const updateWebTemplateById = async (req, res) => {
     const webTemplateEventDeleteCriteria = {
       where: {
         event: {
-          $notIn: eventModels.map((eventModel) => eventModel.id),
+          [Op.notIn]: eventModels.map((eventModel) => eventModel.id),
         },
         web_template: webTemplateModel.id,
       },

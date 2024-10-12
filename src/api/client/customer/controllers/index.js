@@ -3,6 +3,7 @@ const constants = require("../../../../utils/constants");
 const Database = require("../../../../config/database");
 const { validatorCreateCustomer } = require("../validators");
 const { hashPasswordCustomer } = require("../../../../config/auth");
+const { Op } = require("sequelize");
 
 const cleanUser = (customerModel) => {
   const customerObject = customerModel.get({ plain: true });
@@ -22,7 +23,7 @@ const createCustomer = async (req, res) => {
     // validate username
     const criteria = {
       where: {
-        email: { $like: req.body.email },
+        email: { [Op.like]: req.body.email },
       },
     };
 

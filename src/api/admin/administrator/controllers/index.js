@@ -6,6 +6,7 @@ const {
   validatorCreateRootAdministrator,
 } = require("../validators");
 const { hashPasswordAdministrator } = require("../../../../config/auth");
+const { Op } = require("sequelize");
 
 const cleanUser = (administratorModel) => {
   const administratorObject = administratorModel.get({ plain: true });
@@ -66,7 +67,7 @@ const createAdministrator = async (req, res) => {
     // validate username
     const criteria = {
       where: {
-        email: { $like: req.body.email },
+        email: { [Op.like]: req.body.email },
       },
     };
 

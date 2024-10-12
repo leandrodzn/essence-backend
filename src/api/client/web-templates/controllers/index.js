@@ -10,6 +10,7 @@ const Database = require("../../../../config/database");
 const { validatorGetWebTemplates } = require("../validators");
 const { getUrlPublicFile } = require("../../../../utils/storage-helper");
 const { validatorId } = require("../../../../utils/validators");
+const { Op } = require("sequelize");
 
 /**
  * @param {Request} req
@@ -33,7 +34,7 @@ const getAllWebTemplates = async (req, res) => {
 
     if (filter && filter.event) {
       criteria.where.id = {
-        $in: Sequelize.safeLiteral(
+        [Op.in]: Sequelize.safeLiteral(
           "(SELECT web_template_event.web_template FROM web_template_event WHERE web_template_event.event = ?)",
           [filter.event]
         ),
