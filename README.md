@@ -198,7 +198,7 @@ bash
 bash
 
 ```sh
-  git push origin name/develop // example wilder/develop
+  git push origin name/develop // example: wilder/develop
 ```
 
 <br>
