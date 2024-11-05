@@ -1,3 +1,76 @@
-node_modules/*
-.env
+# docker volumes
+## mysql sync folder
+schemas/
+
+# public files
 public/*
+!public/static
+!public/stylesheets
+!public/stylesheets/*
+!public/static/*
+!public/data/*
+!public/data
+
+# Node artifact files
+dist/
+
+# Compiled Java class files
+*.class
+
+# Compiled Python bytecode
+*.py[cod]
+
+# Log files
+*.log
+/logs
+
+# Package files
+*.jar
+
+# Maven
+target/
+dist/
+
+# JetBrains IDE
+.idea/
+
+# Unit test reports
+TEST*.xml
+
+# Applications
+*.app
+*.exe
+*.war
+
+# Large media files
+*.mp4
+*.tiff
+*.avi
+*.flv
+*.mov
+*.wmv
+
+#Mac OS X
+.DS_Store
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+#Linux
+*~
+*.sw[a-p]
+.directory
+.env
+ecosystem.config.js
+
+#Windows
+Thumbs.db
+Desktop.ini
+/nbproject/private/
+ni
+node_modules/*
+/config.json
+/config/config.json
+config.json
+.env

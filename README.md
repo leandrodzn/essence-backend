@@ -15,6 +15,7 @@
     - [Create empty database](#create-empty-database)
     - [Create .env file](#create-env-file)
     - [Start HTTP server](#start-http-server)
+    - [Run seeders](#run-seeders)
     - [Push your branch](#push-your-branch)
   - [Authors](#authors)
   - [Build with](#build-with)
@@ -140,7 +141,56 @@ EC_INITIAL_ROOT_CODE=
 bash
 
 ```sh
-  nodemon bin/www
+  npm run dev
+```
+
+### Run seeders
+
+> [!IMPORTANT]  
+> Server should be running to run seeders.
+
+Initialize Sequelize to be able to run seeders.
+
+bash
+
+```sh
+  npx sequelize-cli init
+```
+
+Configure the config/config.json file with database connection (for local environment configure "development")
+
+```bash
+{
+  "development": {
+    "username": "root",
+    "password": "password",
+    "database": "essence_creatives_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": null,
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
+```
+
+Run the seeds
+
+bash
+
+```sh
+  npx sequelize-cli db:seed:all
 ```
 
 ### Push your branch
