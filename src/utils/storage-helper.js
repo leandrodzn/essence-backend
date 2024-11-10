@@ -184,9 +184,107 @@ const fileExists = async (relativePath) => {
   }
 };
 
+const uploadMultipleFiles = async ({
+  req,
+  res,
+  mainImageName = "mainImage", // Field name for the main image
+  additionalImagesName = "additionalImages", // Field name for the additional images
+  folder = "images",
+  maxAdditionalCount = 2, // Maximum number of additional images allowed
+}) => {
+  return new Promise(async (resolve, reject) => {
+    let relativeFolderPath = "";
+    let errorFilter = null;
+
+    // Configure the storage settings for multer
+    let storage = multer.diskStorage({
+      destination: async (req, file, callback) => {
+        // Set the absolute and relative paths for the upload folder
+        let absoluteFolderPath = path.join(
+          _getBasePath(),
+          PUBLIC_UPLOAD_FOLDER
+        );
+        relativeFolderPath = path.dirname(PUBLIC_UPLOAD_FOLDER);
+
+        absoluteFolderPath = path.join(absoluteFolderPath, folder);
+        relativeFolderPath = path.join(PUBLIC_UPLOAD_FOLDER, folder);
+
+        // Ensure the folder exists before uploading
+        await _validateExistenceFolderAndCreate(absoluteFolderPath);
+        // Set the destination for the uploaded file
+        callback(null, absoluteFolderPath);
+      },
+
+      filename: (req, file, callback) => {
+        // Generate a unique filename using UUID and the current timestamp
+        let finalFilename = `${uuidv4()}-${moment().format("DDMMYYYYHHmmss")}`;
+        // Set the filename for the uploaded file
+        callback(null, finalFilename);
+      },
+    });
+
+    // Configure additional options for multer
+    let options = {
+      storage: storage,
+      fileFilter: (req, file, callback) => {
+        // Check if the file extension is allowed
+        const extension = (
+          file.originalname.split(".").pop() || ""
+        ).toLowerCase();
+        const isAllowed = ALLOWED_EXT.includes(extension);
+        // If not allowed, set an error filter
+        if (!isAllowed) errorFilter = new Error("Image not allowed");
+        // Continue with the upload process
+        callback(null, true);
+      },
+    };
+
+    // Function to fix the request body
+    const fixBody = () => {
+      for (let element in req.body) {
+        if (req.body[element] && typeof req.body[element] !== "object") {
+          if (req.body[element] == "undefined") req.body[element] = undefined;
+          else if (req.body[element] == "null" || req.body[element] == "NULL")
+            req.body[element] = null;
+        }
+      }
+    };
+
+    // Create a multer instance for handling the multiple file upload
+    const upload = multer(options).fields([
+      { name: mainImageName, maxCount: 1 }, // Main image
+      { name: additionalImagesName, maxCount: maxAdditionalCount }, // Additional images
+    ]);
+
+    // Perform the upload and handle any errors
+    upload(req, res, (error) => {
+      if (error || errorFilter) return reject(error ?? errorFilter);
+
+      fixBody();
+
+      // Prepare the result object with the file paths
+      const result = {
+        // Main image
+        mainImage: req.files[mainImageName]
+          ? path.join(relativeFolderPath, req.files[mainImageName][0].filename)
+          : null,
+        // Additional images
+        additionalImages: req.files[additionalImagesName]
+          ? req.files[additionalImagesName].map((file) =>
+              path.join(relativeFolderPath, file.filename)
+            )
+          : [],
+      };
+
+      return resolve(result);
+    });
+  });
+};
+
 module.exports = {
   uploadSingleFile,
   getUrlPublicFile,
   deleteFile,
   fileExists,
+  uploadMultipleFiles,
 };
