@@ -30,7 +30,7 @@ const model = (sequelize) => {
         allowNull: true,
       },
       image: {
-        type: DataTypes.TEXT,
+        type: DataTypes.BIGINT,
         allowNull: true,
       },
       link: {
@@ -51,6 +51,18 @@ const model = (sequelize) => {
   WebTemplate.associate = (models) => {
     WebTemplate.hasMany(models.WebTemplateEvent, {
       foreignKey: "web_template",
+    });
+
+    // Relation with many images (all images related to this WebTemplate)
+    WebTemplate.hasMany(models.Image, {
+      foreignKey: "web_template",
+      as: "Images", // Alias for the relation
+    });
+
+    // Relation for the main image or thumbnail
+    WebTemplate.belongsTo(models.Image, {
+      foreignKey: "image",
+      as: "ThumbnailImage", // Alias for the relation
     });
   };
 
