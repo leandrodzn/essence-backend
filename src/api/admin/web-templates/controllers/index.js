@@ -7,6 +7,7 @@ const {
   uploadSingleFile,
   deleteFile,
   getUrlPublicFile,
+  uploadMultipleFiles,
 } = require("../../../../utils/storage-helper");
 const { Op } = require("sequelize");
 
@@ -19,29 +20,66 @@ const createWebTemplate = async (req, res) => {
   let transaction,
     back = {};
   try {
-    const image = await uploadSingleFile({ req, res });
-    back.image = image;
+    // Subir múltiples archivos
+    const imageUploadResult = await uploadMultipleFiles({
+      req,
+      res,
+      mainImageName: "mainImage", // Campo para la imagen principal
+      additionalImagesName: "additionalImages", // Campo para imágenes adicionales
+      folder: "webTemplates",
+      maxAdditionalCount: 2, // Límite de imágenes adicionales
+    });
 
-    // Validate front data
+    back.imageUploadResult = imageUploadResult;
+
+    // Validar los datos enviados desde el cliente
     await validatorCreateWebTemplate(req);
 
     transaction = await Database.transaction();
 
     const { name, link, description, price, events } = req.body;
 
-    // Creation of template
+    // Crear el modelo de la plantilla web
     let webTemplateModel = await WebTemplate.create(
       {
         name,
         link,
         description,
         price,
-        image,
+        image: imageUploadResult.mainImage, // Ruta de la imagen principal
       },
       { transaction }
     );
 
-    // Find existing events
+    // Crear modelos para la imagen principal y las adicionales
+    let imageModels = [];
+
+    // Imagen principal
+    if (imageUploadResult.mainImage) {
+      const mainImageModel = await Image.create(
+        { path: imageUploadResult.mainImage },
+        { transaction }
+      );
+      imageModels.push(mainImageModel);
+      // Actualizar el modelo de la plantilla con el ID de la imagen principal
+      webTemplateModel = await webTemplateModel.update(
+        { image: mainImageModel.id },
+        { transaction }
+      );
+    }
+
+    // Imágenes adicionales
+    if (imageUploadResult.additionalImages.length > 0) {
+      const additionalImageModels = await Image.bulkCreate(
+        imageUploadResult.additionalImages.map((imagePath) => ({
+          path: imagePath,
+        })),
+        { transaction }
+      );
+      imageModels = imageModels.concat(additionalImageModels);
+    }
+
+    // Buscar los eventos existentes
     const criteria = {
       where: {
         id: events,
@@ -49,24 +87,20 @@ const createWebTemplate = async (req, res) => {
     };
     const eventModels = await Event.findAll(criteria, { transaction });
 
-    // Create relation template - event
-    const webTemplateEventsToCreate = eventModels.map((eventModel) => {
-      return {
-        event: eventModel.id,
-        web_template: webTemplateModel.id,
-      };
-    });
+    // Crear relaciones entre plantilla y eventos
+    const webTemplateEventsToCreate = eventModels.map((eventModel) => ({
+      event: eventModel.id,
+      web_template: webTemplateModel.id,
+    }));
 
     let webTemplateEventModels = await WebTemplateEvent.bulkCreate(
       webTemplateEventsToCreate,
-      {
-        transaction,
-      }
+      { transaction }
     );
 
     await transaction.commit();
 
-    // Get list of events for template
+    // Obtener la lista de eventos relacionados
     webTemplateEventModels = await WebTemplateEvent.findAll({
       where: {
         id: webTemplateEventModels.map(
@@ -82,14 +116,20 @@ const createWebTemplate = async (req, res) => {
       ],
     });
 
-    // Settings fields in response
-    webTemplateModel.setDataValue("image", getUrlPublicFile(image));
+    // Configurar los campos de la respuesta
+    webTemplateModel.setDataValue(
+      "images",
+      imageModels.map((img) => ({
+        id: img.id,
+        url: getUrlPublicFile(img.path),
+      }))
+    );
     webTemplateModel.setDataValue(
       "WebTemplateEvents",
       webTemplateEventModels || []
     );
 
-    // Response
+    // Responder con éxito
     res.status(201).json({
       status: "OK",
       data: webTemplateModel,
@@ -101,7 +141,16 @@ const createWebTemplate = async (req, res) => {
     )
       await transaction.rollback();
 
-    if (back?.image) await deleteFile(back.image);
+    if (back?.imageUploadResult) {
+      const { mainImage, additionalImages } = back.imageUploadResult;
+      if (mainImage) await deleteFile(mainImage);
+      if (additionalImages.length > 0) {
+        for (const additionalImage of additionalImages) {
+          await deleteFile(additionalImage);
+        }
+      }
+    }
+
     res.jsonError(error);
   }
 };

@@ -34,7 +34,7 @@ const validatorCreateWebTemplate = async (req, isUpdate) => {
             options: { max: 255 },
             errorMessage: constants.errors.field_invalid_format.replace(
               ":name",
-              "title"
+              "name"
             ),
           },
         },
