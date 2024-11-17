@@ -1,4 +1,4 @@
-const { Event, WebTemplate, WebTemplateEvent } = require("../../../../models");
+const { Event, WebTemplate, WebTemplateEvent, Image } = require("../../../../models");
 const { validatorCreateWebTemplate } = require("../validators");
 const { validatorId } = require("../../../../utils/validators");
 const constants = require("../../../../utils/constants");
@@ -23,11 +23,7 @@ const createWebTemplate = async (req, res) => {
     // Subir múltiples archivos
     const imageUploadResult = await uploadMultipleFiles({
       req,
-      res,
-      mainImageName: "mainImage", // Campo para la imagen principal
-      additionalImagesName: "additionalImages", // Campo para imágenes adicionales
-      folder: "webTemplates",
-      maxAdditionalCount: 2, // Límite de imágenes adicionales
+      res // Límite de imágenes adicionales
     });
 
     back.imageUploadResult = imageUploadResult;
@@ -46,33 +42,33 @@ const createWebTemplate = async (req, res) => {
         link,
         description,
         price,
-        image: imageUploadResult.mainImage, // Ruta de la imagen principal
       },
       { transaction }
     );
 
-    // Crear modelos para la imagen principal y las adicionales
+    // Crear modelos para las imágenes principal y adicionales
     let imageModels = [];
 
     // Imagen principal
     if (imageUploadResult.mainImage) {
       const mainImageModel = await Image.create(
-        { path: imageUploadResult.mainImage },
+        {
+          web_template: webTemplateModel.id,
+          link: imageUploadResult.mainImage,
+          is_thumbnail: true, // Indica que es la imagen principal
+        },
         { transaction }
       );
       imageModels.push(mainImageModel);
-      // Actualizar el modelo de la plantilla con el ID de la imagen principal
-      webTemplateModel = await webTemplateModel.update(
-        { image: mainImageModel.id },
-        { transaction }
-      );
     }
 
     // Imágenes adicionales
     if (imageUploadResult.additionalImages.length > 0) {
       const additionalImageModels = await Image.bulkCreate(
         imageUploadResult.additionalImages.map((imagePath) => ({
-          path: imagePath,
+          web_template: webTemplateModel.id,
+          link: imagePath,
+          is_thumbnail: false, // No son imágenes principales
         })),
         { transaction }
       );
@@ -121,7 +117,8 @@ const createWebTemplate = async (req, res) => {
       "images",
       imageModels.map((img) => ({
         id: img.id,
-        url: getUrlPublicFile(img.path),
+        url: getUrlPublicFile(img.link),
+        is_thumbnail: img.is_thumbnail,
       }))
     );
     webTemplateModel.setDataValue(
