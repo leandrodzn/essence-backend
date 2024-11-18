@@ -4,7 +4,6 @@ const { validatorId } = require("../../../../utils/validators");
 const constants = require("../../../../utils/constants");
 const Database = require("../../../../config/database");
 const {
-  uploadSingleFile,
   deleteFile,
   getUrlPublicFile,
   uploadMultipleFiles,
@@ -20,62 +19,66 @@ const createWebTemplate = async (req, res) => {
   let transaction,
     back = {};
   try {
-    // Subir múltiples archivos
+    // Upload multiple files
     const imageUploadResult = await uploadMultipleFiles({
       req,
-      res // Límite de imágenes adicionales
+      res,
     });
 
     back.imageUploadResult = imageUploadResult;
 
-    // Validar los datos enviados desde el cliente
+    // Validate the data sent from the client
     await validatorCreateWebTemplate(req);
 
     transaction = await Database.transaction();
 
     const { name, link, description, price, events } = req.body;
 
-    // Crear el modelo de la plantilla web
+    // Create the web template model
     let webTemplateModel = await WebTemplate.create(
       {
         name,
         link,
         description,
-        price,
+        price
       },
       { transaction }
     );
 
-    // Crear modelos para las imágenes principal y adicionales
+    // Create models for the main and additional images
     let imageModels = [];
 
-    // Imagen principal
+    // Main image
     if (imageUploadResult.mainImage) {
       const mainImageModel = await Image.create(
         {
           web_template: webTemplateModel.id,
           link: imageUploadResult.mainImage,
-          is_thumbnail: true, // Indica que es la imagen principal
+          is_thumbnail: true, // Indicates that this is the main image
         },
+        { transaction }
+      );
+      webTemplateModel = await webTemplateModel.update(
+        { image: mainImageModel.id },
         { transaction }
       );
       imageModels.push(mainImageModel);
     }
 
-    // Imágenes adicionales
+    // Additional images
     if (imageUploadResult.additionalImages.length > 0) {
       const additionalImageModels = await Image.bulkCreate(
         imageUploadResult.additionalImages.map((imagePath) => ({
           web_template: webTemplateModel.id,
           link: imagePath,
-          is_thumbnail: false, // No son imágenes principales
+          is_thumbnail: false, // These are not main images
         })),
         { transaction }
       );
       imageModels = imageModels.concat(additionalImageModels);
     }
 
-    // Buscar los eventos existentes
+    // Find existing events
     const criteria = {
       where: {
         id: events,
@@ -83,7 +86,7 @@ const createWebTemplate = async (req, res) => {
     };
     const eventModels = await Event.findAll(criteria, { transaction });
 
-    // Crear relaciones entre plantilla y eventos
+    // Create relationships between template and events
     const webTemplateEventsToCreate = eventModels.map((eventModel) => ({
       event: eventModel.id,
       web_template: webTemplateModel.id,
@@ -96,7 +99,7 @@ const createWebTemplate = async (req, res) => {
 
     await transaction.commit();
 
-    // Obtener la lista de eventos relacionados
+    // Get the list of related events
     webTemplateEventModels = await WebTemplateEvent.findAll({
       where: {
         id: webTemplateEventModels.map(
@@ -112,7 +115,7 @@ const createWebTemplate = async (req, res) => {
       ],
     });
 
-    // Configurar los campos de la respuesta
+    // Set response fields
     webTemplateModel.setDataValue(
       "images",
       imageModels.map((img) => ({
@@ -126,7 +129,7 @@ const createWebTemplate = async (req, res) => {
       webTemplateEventModels || []
     );
 
-    // Responder con éxito
+    // Respond with success
     res.status(201).json({
       status: "OK",
       data: webTemplateModel,
@@ -161,20 +164,25 @@ const updateWebTemplateById = async (req, res) => {
   let transaction,
     back = {};
   try {
-    const image = await uploadSingleFile({ req, res });
-    back.image = image;
+    // Upload multiple files
+    const imageUploadResult = await uploadMultipleFiles({
+      req,
+      res, // Limit increased to 4 additional images
+    });
 
-    // Validate params
+    back.imageUploadResult = imageUploadResult;
+
+    // Validate parameters
     await validatorId(req);
 
-    // Validate front data
+    // Validate the data sent from the client
     await validatorCreateWebTemplate(req, true);
 
     transaction = await Database.transaction();
 
     const { name, link, description, price, events } = req.body;
 
-    // Find register
+    // Find the existing record
     let webTemplateModel = await WebTemplate.findByPk(req.params.id, {
       transaction,
     });
@@ -194,11 +202,68 @@ const updateWebTemplateById = async (req, res) => {
       price,
     };
 
-    if (image) dataToUpdate.image = image;
-
     webTemplateModel = await webTemplateModel.update(dataToUpdate, {
       transaction,
     });
+
+    // Update existing images
+    let existingImages = await Image.findAll({
+      where: { web_template: webTemplateModel.id },
+      transaction,
+    });
+
+    // Delete images that will no longer be used
+    const imagesToDelete = existingImages.filter(
+      (img) =>
+        img.is_thumbnail ||
+        !imageUploadResult.additionalImages.includes(img.link)
+    );
+
+    for (const image of imagesToDelete) {
+      await deleteFile(image.link);
+      await image.destroy({ transaction });
+    }
+
+    // Create or update the main image
+    if (imageUploadResult.mainImage) {
+      const mainImage = existingImages.find((img) => img.is_thumbnail);
+      if (mainImage) {
+        await mainImage.update(
+          { link: imageUploadResult.mainImage },
+          { transaction }
+        );
+      } else {
+        const imageModel = await Image.create(
+          {
+            web_template: webTemplateModel.id,
+            link: imageUploadResult.mainImage,
+            is_thumbnail: true,
+          },
+          { transaction }
+        );
+        webTemplateModel = await webTemplateModel.update(
+          { image: imageModel.id },
+          { transaction }
+        );
+      }
+    }
+
+    // Create additional images
+    const newAdditionalImages = imageUploadResult.additionalImages.filter(
+      (imagePath) =>
+        !existingImages.some((img) => img.link === imagePath)
+    );
+
+    if (newAdditionalImages.length > 0) {
+      await Image.bulkCreate(
+        newAdditionalImages.map((imagePath) => ({
+          web_template: webTemplateModel.id,
+          link: imagePath,
+          is_thumbnail: false,
+        })),
+        { transaction }
+      );
+    }
 
     // Find existing events
     const criteria = {
@@ -208,7 +273,7 @@ const updateWebTemplateById = async (req, res) => {
     };
     const eventModels = await Event.findAll(criteria, { transaction });
 
-    // Find or create relations event - template
+    // Find or create event-template relationships
     for (const event of eventModels) {
       let existEventForWebTemplate = await WebTemplateEvent.findOne(
         {
@@ -220,7 +285,6 @@ const updateWebTemplateById = async (req, res) => {
         { transaction }
       );
 
-      // If it is a new relation create it
       if (!existEventForWebTemplate)
         await WebTemplateEvent.create(
           {
@@ -231,7 +295,7 @@ const updateWebTemplateById = async (req, res) => {
         );
     }
 
-    // Delete others relations event - template
+    // Delete event-template relationships that are no longer used
     const webTemplateEventDeleteCriteria = {
       where: {
         event: {
@@ -253,10 +317,10 @@ const updateWebTemplateById = async (req, res) => {
       { transaction }
     );
 
-    // Finish operations
+    // Finalize operations
     await transaction.commit();
 
-    // Find events for template
+    // Find events related to the template
     let webTemplateEventModels = await WebTemplateEvent.findAll({
       where: {
         event: eventModels.map((eventModel) => eventModel.id),
@@ -271,18 +335,26 @@ const updateWebTemplateById = async (req, res) => {
       ],
     });
 
-    // Setting fields in response
+    // Configure fields in the response
+    const allImages = await Image.findAll({
+      where: { web_template: webTemplateModel.id },
+    });
+
     webTemplateModel.setDataValue(
-      "image",
-      getUrlPublicFile(webTemplateModel.image)
+      "images",
+      allImages.map((img) => ({
+        id: img.id,
+        url: getUrlPublicFile(img.link),
+        is_thumbnail: img.is_thumbnail,
+      }))
     );
     webTemplateModel.setDataValue(
       "WebTemplateEvents",
       webTemplateEventModels || []
     );
 
-    // Response
-    res.status(201).json({
+    // Respond
+    res.status(200).json({
       status: "OK",
       data: webTemplateModel,
     });
@@ -293,10 +365,18 @@ const updateWebTemplateById = async (req, res) => {
     )
       await transaction.rollback();
 
-    if (back?.image) await deleteFile(back.image);
+    if (back?.imageUploadResult) {
+      const { mainImage, additionalImages } = back.imageUploadResult;
+      if (mainImage) await deleteFile(mainImage);
+      for (const additionalImage of additionalImages) {
+        await deleteFile(additionalImage);
+      }
+    }
+
     res.jsonError(error);
   }
 };
+
 
 /**
  * @param {Request} req
@@ -370,29 +450,58 @@ const getWebTemplateById = async (req, res) => {
  * @returns {Promise<void>}
  */
 const deleteWebTemplateById = async (req, res) => {
+  let transaction;
   try {
-    // Validate params
+    // Validate parameters
     await validatorId(req);
 
-    const webTemplateModel = await WebTemplate.findByPk(req.params.id);
+    transaction = await Database.transaction();
+
+    // Find the template by ID
+    const webTemplateModel = await WebTemplate.findByPk(req.params.id, {
+      transaction,
+    });
 
     if (!webTemplateModel)
       throw new CustomError({
         status: 404,
         name: "NotFound",
-        message: constants.response.BOOK_NOT_FOUND,
+        message: constants.response.WEB_TEMPLATE_NOT_FOUND,
       });
 
-    const webTemplateModelImage = webTemplateModel?.image;
+    // Find images associated with the template
+    const associatedImages = await Image.findAll({
+      where: { web_template: webTemplateModel.id },
+      transaction,
+    });
 
-    await webTemplateModel.destroy();
+    // Delete physical files of associated images
+    for (const image of associatedImages) {
+      await deleteFile(image.link);
+    }
 
-    if (webTemplateModelImage) await deleteFile(webTemplateModelImage);
+    // Delete image records from the database
+    await Image.destroy({
+      where: { web_template: webTemplateModel.id },
+      transaction,
+    });
 
+    // Delete the template
+    await webTemplateModel.destroy({ transaction });
+
+    await transaction.commit();
+
+    // Respond with success
     res.status(200).json({
       status: "OK",
     });
   } catch (error) {
+    if (
+      transaction &&
+      (!transaction?.finished || transaction?.finished !== "commit")
+    )
+      await transaction.rollback();
+
     res.jsonError(error);
   }
 };
