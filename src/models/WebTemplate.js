@@ -22,7 +22,7 @@ const model = (sequelize) => {
         allowNull: false,
       },
       price: {
-        type: DataTypes.DOUBLE,
+        type: DataTypes.DECIMAL(13, 2), // 13 digits in total, 2 after the decimal point
         allowNull: false,
       },
       description: {
