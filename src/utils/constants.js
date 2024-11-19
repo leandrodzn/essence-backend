@@ -14,6 +14,9 @@ module.exports = {
     INVALID_AUTH_CREDENTIAL: "UnauthorizedError",
     EVENT_NOT_FOUND: "EventNotFound",
     WEB_TEMPLATE_NOT_FOUND: "WebTemplateNotFound",
+    IMAGE_REQUIRED: "ImageRequired",
+    IMAGE_NOT_FOUND: "ImageNotFound",
+    IMAGES_REQUIRED: "ImagesRequired",
   },
   errors: {
     field_required: "The field :name is required",
