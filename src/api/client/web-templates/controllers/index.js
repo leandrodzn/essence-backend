@@ -4,6 +4,7 @@ const {
   Event,
   Sequelize,
   WebTemplateFavorite,
+  Image,
 } = require("../../../../models");
 const constants = require("../../../../utils/constants");
 const Database = require("../../../../config/database");
@@ -25,7 +26,15 @@ const getAllWebTemplates = async (req, res) => {
 
     let criteria = {
       where: {},
-      attributes: ["id", "name", "price", "description", "link", "image"],
+      attributes: ["id", "name", "price", "description", "link"],
+      include: [
+        {
+          model: Image,
+          as: "ThumbnailImage",
+          attributes: ["link"],
+          required: false,
+        },
+      ],
     };
 
     if (sorting && sorting.created_at) {
@@ -44,8 +53,11 @@ const getAllWebTemplates = async (req, res) => {
     const webTemplates = await WebTemplate.findAndCountAll(criteria);
 
     (webTemplates?.rows || []).forEach((webTemplate) => {
-      if (webTemplate?.image)
-        webTemplate.setDataValue("image", getUrlPublicFile(webTemplate.image));
+      if (webTemplate?.ThumbnailImage?.link)
+        webTemplate.ThumbnailImage.setDataValue(
+          "link",
+          getUrlPublicFile(webTemplate.ThumbnailImage.link)
+        );
     });
 
     for (const webTemplate of webTemplates?.rows || []) {
@@ -89,7 +101,24 @@ const getWebTemplateById = async (req, res) => {
       where: {
         id: req.params.id,
       },
-      attributes: ["id", "name", "price", "description", "link", "image"],
+      attributes: ["id", "name", "price", "description", "link"],
+      include: [
+        {
+          model: Image,
+          as: "ThumbnailImage",
+          attributes: ["link"],
+          required: false,
+        },
+        {
+          model: Image,
+          as: "Images",
+          attributes: ["link"],
+          where: {
+            is_thumbnail: false,
+          },
+          required: false,
+        },
+      ],
     });
 
     if (!webTemplateModel)
@@ -99,20 +128,27 @@ const getWebTemplateById = async (req, res) => {
         message: constants.response.WEB_TEMPLATE_NOT_FOUND,
       });
 
-    if (webTemplateModel?.image)
-      webTemplateModel.setDataValue(
-        "image",
-        getUrlPublicFile(webTemplateModel.image)
+    if (webTemplateModel?.ThumbnailImage?.link)
+      webTemplateModel.ThumbnailImage.setDataValue(
+        "link",
+        getUrlPublicFile(webTemplateModel.ThumbnailImage.link)
       );
+
+    if (webTemplateModel?.Images?.length) {
+      webTemplateModel?.Images.forEach((image) => {
+        image.setDataValue("link", getUrlPublicFile(image.link));
+      });
+    }
 
     const webTemplateEvents = await WebTemplateEvent.findAll({
       where: {
         web_template: webTemplateModel.id,
       },
+      attributes: ["id"],
       include: [
         {
           model: Event,
-          attributes: ["id", "name", "description"],
+          attributes: ["name", "description"],
         },
       ],
     });
