@@ -1,0 +1,336 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Web Template Contact API",
+    "version": "1.0.0",
+    "description": "API for managing web template contacts for administrators."
+  },
+  "paths": {
+    "/admin/template-contact": {
+      "get": {
+        "summary": "Get all web template contacts",
+        "tags": ["Template Contacts"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "count",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Number of results per page"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "readed": {
+                  "type": "boolean"
+                }
+              }
+            },
+            "description": "Filter by 'readed' status"
+          },
+          {
+            "name": "sorting",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "created_at": {
+                  "type": "string",
+                  "enum": ["ASC", "DESC"]
+                },
+                "readed": {
+                  "type": "string",
+                  "enum": ["ASC", "DESC"]
+                }
+              }
+            },
+            "description": "Sorting criteria"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of web template contacts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebTemplateContactList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/admin/template-contact/{id}": {
+      "get": {
+        "summary": "Get a web template contact by ID",
+        "tags": ["Template Contacts"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Web template contact ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of a specific web template contact",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebTemplateContact"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Web template contact not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update the 'readed' status of a web template contact",
+        "tags": ["Template Contacts"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Web template contact ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "readed": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["readed"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated"
+          },
+          "404": {
+            "description": "Web template contact not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a web template contact by ID",
+        "tags": ["Template Contacts"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Web template contact ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully deleted"
+          },
+          "404": {
+            "description": "Web template contact not found"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "WebTemplateContactList": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer",
+                "description": "Number of web template contacts."
+              },
+              "rows": {
+                "type": "array",
+                "description": "List of elements.",
+                "items": {
+                  "$ref": "#/components/schemas/WebTemplateContact"
+                }
+              }
+            }
+          }
+        }
+      },
+      "WebTemplateContact": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the web template contact."
+          },
+          "price_day": {
+            "type": "number",
+            "description": "The price per day for the web template contact."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the contact was created."
+          },
+          "readed": {
+            "type": "boolean",
+            "description": "Indicates whether the contact has been read or not."
+          },
+          "web_template": {
+            "type": "string",
+            "description": "The ID of the associated web template."
+          },
+          "show_customer": {
+            "type": "boolean",
+            "description": "Indicates whether the contact is visible to customers."
+          },
+          "subject": {
+            "type": "string",
+            "description": "The subject of the contact message."
+          },
+          "description": {
+            "type": "string",
+            "description": "Detailed description of the contact message or request."
+          },
+          "WebTemplate": {
+            "type": "object",
+            "description": "Details of the associated web template.",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Unique identifier for the web template."
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the web template."
+              },
+              "price": {
+                "type": "number",
+                "description": "Price of the web template."
+              },
+              "description": {
+                "type": "string",
+                "description": "Description of the web template."
+              },
+              "ThumbnailImage": {
+                "type": "object",
+                "description": "Thumbnail image for the web template.",
+                "properties": {
+                  "link": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "URL link to the thumbnail image of the web template."
+                  }
+                }
+              }
+            }
+          },
+          "Customer": {
+            "type": "object",
+            "description": "Details of the associated customer.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Customer's first name."
+              },
+              "surname": {
+                "type": "string",
+                "description": "Customer's last name."
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Customer's email address."
+              },
+              "phone": {
+                "type": "string",
+                "description": "Customer's phone number."
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
