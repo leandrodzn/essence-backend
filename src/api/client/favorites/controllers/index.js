@@ -1,9 +1,8 @@
 const {
   WebTemplate,
-  WebTemplateEvent,
-  Event,
   Sequelize,
   WebTemplateFavorite,
+  Image,
 } = require("../../../../models");
 const constants = require("../../../../utils/constants");
 const Database = require("../../../../config/database");
@@ -31,7 +30,15 @@ const getAllWebTemplatesFavorites = async (req, res) => {
         {
           model: WebTemplate,
           where: {},
-          attributes: ["id", "name", "price", "description", "link", "image"],
+          attributes: ["id", "name", "price", "description", "link"],
+          include: [
+            {
+              model: Image,
+              as: "ThumbnailImage",
+              attributes: ["link"],
+              required: false,
+            },
+          ],
         },
       ],
     };
@@ -54,10 +61,10 @@ const getAllWebTemplatesFavorites = async (req, res) => {
     );
 
     (webTemplateFavoriteModels?.rows || []).forEach((webTemplateFavorite) => {
-      if (webTemplateFavorite.WebTemplate?.image)
-        webTemplateFavorite.WebTemplate.setDataValue(
-          "image",
-          getUrlPublicFile(webTemplateFavorite.WebTemplate.image)
+      if (webTemplateFavorite.WebTemplate?.ThumbnailImage?.link)
+        webTemplateFavorite.WebTemplate.ThumbnailImage.setDataValue(
+          "link",
+          getUrlPublicFile(webTemplateFavorite.WebTemplate.ThumbnailImage.link)
         );
     });
 
