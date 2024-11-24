@@ -42,6 +42,16 @@ const model = (sequelize) => {
         allowNull: false,
         defaultValue: false,
       },
+      show_admin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      show_customer: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
     },
     {
       tableName: "web_template_history",
