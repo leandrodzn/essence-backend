@@ -27,6 +27,7 @@ const getAllWebTemplates = async (req, res) => {
     let criteria = {
       where: {},
       attributes: ["id", "name", "price", "description", "link"],
+      order: [["created_at", "DESC"]],
       include: [
         {
           model: Image,

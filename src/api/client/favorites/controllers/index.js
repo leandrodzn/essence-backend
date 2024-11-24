@@ -26,6 +26,7 @@ const getAllWebTemplatesFavorites = async (req, res) => {
         customer: req.currentUser.id,
       },
       attributes: ["id"],
+      order: [["created_at", "DESC"]],
       include: [
         {
           model: WebTemplate,
