@@ -57,6 +57,8 @@
                       "example": "I need more details about this template."
                     },
                     "readed": { "type": "boolean", "example": false },
+                    "show_admin": { "type": "boolean", "example": true },
+                    "show_customer": { "type": "boolean", "example": true },
                     "created_at": {
                       "type": "string",
                       "example": "2023-05-18T12:00:00Z"
@@ -101,6 +103,7 @@
                           "web_template": { "type": "integer", "example": 1 },
                           "customer": { "type": "integer", "example": 1 },
                           "readed": { "type": "boolean", "example": false },
+                          "show_admin": { "type": "boolean", "example": true },
                           "created_at": {
                             "type": "string",
                             "example": "2023-05-18T12:00:00Z"

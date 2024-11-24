@@ -49,6 +49,8 @@ const createWebTemplateContact = async (req, res) => {
       subject: subject,
       description: description,
       readed: false,
+      show_customer: true,
+      show_admin: true,
     });
 
     res.status(200).json({
@@ -72,7 +74,9 @@ const getAllWebTemplateContacts = async (req, res) => {
     let criteria = {
       where: {
         customer: customer,
+        show_customer: true,
       },
+      order: [["created_at", "DESC"]],
       attributes: [
         "id",
         "price_day",
@@ -80,6 +84,7 @@ const getAllWebTemplateContacts = async (req, res) => {
         "customer",
         "created_at",
         "readed",
+        "show_admin",
       ],
       include: [
         {
@@ -137,7 +142,63 @@ const getAllWebTemplateContacts = async (req, res) => {
   }
 };
 
+/**
+ * @param {Request} req
+ * @param {Response} res
+ * @returns {Promise<void>}
+ */
+const deleteTemplateContactById = async (req, res) => {
+  let transaction;
+  try {
+    // Validate params
+    await validatorId(req);
+
+    const templateContactModel = await WebTemplateHistory.findByPk(
+      req.params.id,
+      {
+        where: {
+          show_customer: true,
+        },
+      }
+    );
+
+    if (!templateContactModel)
+      throw new CustomError({
+        status: 404,
+        name: "NotFound",
+        message: constants.response.WEB_TEMPLATE_CONTACT_NOT_FOUND,
+      });
+
+    transaction = await Database.transaction();
+
+    await templateContactModel.update(
+      {
+        show_customer: false,
+      },
+      { transaction }
+    );
+
+    if (!templateContactModel.show_admin)
+      await templateContactModel.destroy({ transaction });
+
+    await transaction.commit();
+
+    res.status(200).json({
+      status: "OK",
+    });
+  } catch (error) {
+    if (
+      transaction &&
+      (!transaction?.finished || transaction?.finished !== "commit")
+    )
+      await transaction.rollback();
+
+    res.jsonError(error);
+  }
+};
+
 module.exports = {
   createWebTemplateContact,
   getAllWebTemplateContacts,
+  deleteTemplateContactById,
 };
