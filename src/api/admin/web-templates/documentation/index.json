@@ -52,11 +52,19 @@
             "type": "number"
           },
           {
-            "name": "image",
+            "name": "mainImage",
             "in": "formData",
-            "description": "Image file of the web template",
+            "description": "Main image file of the web template",
             "required": true,
             "type": "file"
+          },
+          {
+            "name": "additionalFiles",
+            "in": "formData",
+            "description": "Array of additional image file for the web template (must be exactly two files)",
+            "required": true,
+            "type": "array",
+            "items": { "type": "file" }
           },
           {
             "name": "events",
@@ -149,12 +157,21 @@
             "required": true,
             "type": "number"
           },
+
           {
-            "name": "image",
+            "name": "mainImage",
             "in": "formData",
-            "description": "New image file of the web template (optional)",
+            "description": "New main image file of the web template (optional)",
             "required": false,
             "type": "file"
+          },
+          {
+            "name": "additionalFiles",
+            "in": "formData",
+            "description": "Array of new additional image file for the web template (optional, must be exactly two files)",
+            "required": false,
+            "type": "array",
+            "items": { "type": "file" }
           },
           {
             "name": "events",
@@ -219,12 +236,29 @@
           "description": "Description of the web template"
         },
         "image": {
-          "type": "string",
-          "description": "Link of the image of the web template"
+          "type": "integer",
+          "description": "Id of the main image of the web template"
         },
         "price": {
           "type": "number",
           "description": "Price of the web template"
+        },
+        "ThumbnailImage": {
+          "type": "object",
+          "description": "Thumbnail image of the web template",
+          "properties": {
+            "link": { "type": "string", "description": "URL of the image" }
+          }
+        },
+        "Images": {
+          "type": "array",
+          "description": "Array of additional images for the web template",
+          "items": {
+            "type": "object",
+            "properties": {
+              "link": { "type": "string", "description": "URL of the image" }
+            }
+          }
         },
         "created_at": {
           "type": "string",

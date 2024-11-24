@@ -148,8 +148,25 @@
           "description": "Description of the web template"
         },
         "image": {
-          "type": "string",
-          "description": "Link of the image of the web template"
+          "type": "integer",
+          "description": "ID of the image of the web template"
+        },
+        "ThumbnailImage": {
+          "type": "object",
+          "description": "Thumbnail image of the web template",
+          "properties": {
+            "link": { "type": "string", "description": "URL of the image" }
+          }
+        },
+        "Images": {
+          "type": "array",
+          "description": "Array of additional images for the web template",
+          "items": {
+            "type": "object",
+            "properties": {
+              "link": { "type": "string", "description": "URL of the image" }
+            }
+          }
         },
         "price": {
           "type": "number",
