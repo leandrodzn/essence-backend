@@ -17,6 +17,7 @@ module.exports = {
     IMAGE_REQUIRED: "ImageRequired",
     IMAGE_NOT_FOUND: "ImageNotFound",
     IMAGES_REQUIRED: "ImagesRequired",
+    WEB_TEMPLATE_CONTACT_NOT_FOUND: "WebTemplateContactNotFound",
   },
   errors: {
     field_required: "The field :name is required",
