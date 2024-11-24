@@ -26,7 +26,7 @@ const model = (sequelize) => {
         allowNull: false,
       },
       price_day: {
-        type: DataTypes.DOUBLE,
+        type: DataTypes.DECIMAL(13, 2), // 13 digits in total, 2 after the decimal point
         allowNull: false,
       },
       subject: {
