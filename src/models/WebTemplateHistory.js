@@ -37,6 +37,11 @@ const model = (sequelize) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      readed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
     },
     {
       tableName: "web_template_history",
