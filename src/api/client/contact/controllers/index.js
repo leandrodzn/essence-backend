@@ -2,6 +2,7 @@ const {
   WebTemplate,
   Sequelize,
   WebTemplateHistory,
+  Image,
 } = require("../../../../models");
 const constants = require("../../../../utils/constants");
 const Database = require("../../../../config/database");
@@ -83,9 +84,17 @@ const getAllWebTemplateContacts = async (req, res) => {
       include: [
         {
           model: WebTemplate,
-          attributes: ["id", "name", "price", "description", "image"],
+          attributes: ["id", "name", "price", "description"],
           required: true,
           paranoid: false,
+          include: [
+            {
+              model: Image,
+              as: "ThumbnailImage",
+              attributes: ["link"],
+              required: false,
+            },
+          ],
         },
       ],
     };
@@ -105,17 +114,17 @@ const getAllWebTemplateContacts = async (req, res) => {
       );
 
       // Template image
-      if (contactHistory.WebTemplate?.image) {
-        const existsImage = await fileExists(contactHistory.WebTemplate.image);
+      if (contactHistory.WebTemplate?.ThumbnailImage?.link) {
+        const existsImage = await fileExists(
+          contactHistory.WebTemplate.ThumbnailImage.link
+        );
 
-        contactHistory.WebTemplate.setDataValue(
-          "image",
+        contactHistory.WebTemplate.ThumbnailImage.setDataValue(
+          "link",
           existsImage
-            ? getUrlPublicFile(contactHistory.WebTemplate.image)
+            ? getUrlPublicFile(contactHistory.WebTemplate.ThumbnailImage.link)
             : null
         );
-      } else {
-        contactHistory.WebTemplate.setDataValue("image", null);
       }
     }
 

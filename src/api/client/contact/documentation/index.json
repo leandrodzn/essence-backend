@@ -118,9 +118,15 @@
                                 "type": "string",
                                 "example": "A great template"
                               },
-                              "image": {
-                                "type": "string",
-                                "example": "http://example.com/public/image1.png"
+                              "ThumbnailImage": {
+                                "type": "object",
+                                "optional": true,
+                                "properties": {
+                                  "link": {
+                                    "type": "string",
+                                    "example": "https://example.com/image.jpg"
+                                  }
+                                }
                               }
                             }
                           },
