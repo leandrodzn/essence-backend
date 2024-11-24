@@ -47,6 +47,7 @@ const createWebTemplateContact = async (req, res) => {
       price_day: webTemplateModel.price,
       subject: subject,
       description: description,
+      readed: false,
     });
 
     res.status(200).json({
@@ -71,7 +72,14 @@ const getAllWebTemplateContacts = async (req, res) => {
       where: {
         customer: customer,
       },
-      attributes: ["id", "price_day", "web_template", "customer", "created_at"],
+      attributes: [
+        "id",
+        "price_day",
+        "web_template",
+        "customer",
+        "created_at",
+        "readed",
+      ],
       include: [
         {
           model: WebTemplate,
